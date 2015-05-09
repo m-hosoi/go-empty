@@ -77,3 +77,34 @@ func ExampleIIf() {
     // b
 }
 ```
+
+## Example with [Pongo2](https://github.com/flosch/pongo2)
+### Go
+```go
+tmpl, err := pongo2.DefaultSet.FromCache("index.html")
+checkErr(err)
+ctxt := pongo2.Context{
+    "iif":          empty.IIf,
+    "is_empty":     empty.IsEmpty,
+    "is_not_empty": empty.IsNotEmpty,
+    "join": func(ar ...string){
+        res := ""
+        for _, v := range ar {
+            res += v
+        }
+        return res
+    }
+    ...
+}
+out, err := tmpl.Execute(ctxt)
+```
+### HTML (template)
+```html
+{% set url = iif(item, join("http://example.org/item/", item.Name, ".html"), "http://example.org/") %}
+<a href="{{ url }}">Logo</a>
+{% if is_empty(item) %}
+<h1>Site Title</h1>
+{% else %}
+<h1>{{item.Name}} |Site Title</h1>
+{% endif %}
+```
